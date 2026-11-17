@@ -1,0 +1,89 @@
+<%- include('../partials/head', { noindex: true }) %>
+<%- include('../partials/admin-header') %>
+
+<main class="container admin-main">
+  <%- include('../partials/flash') %>
+
+  <% if (missingWhatsapp) { %>
+    <div class="alert alert-warn" role="status">
+      Aún no configuras tu número de WhatsApp, así que los botones de compra no te llegan a ti.
+      <a href="/admin/ajustes">Configúralo en Ajustes</a>.
+    </div>
+  <% } %>
+
+  <div class="admin-title-row">
+    <h1>Productos</h1>
+    <a class="btn btn-primary" href="/admin/productos/nuevo">
+      <%- include('../partials/icon', { name: 'plus', size: 18, color: '#FFFFFF', sw: 2 }) %>
+      Nuevo producto
+    </a>
+  </div>
+
+  <form action="/admin" method="get" class="search" role="search">
+    <input type="search" name="q" value="<%= q %>" maxlength="80" aria-label="Buscar en mis productos" placeholder="Buscar en mis productos…">
+    <button class="btn btn-outline" type="submit">Buscar</button>
+  </form>
+
+  <% if (products.length) { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Disponibilidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(function (p) { %>
+            <tr>
+              <td class="thumb-cell">
+                <div class="mini-thumb">
+                  <% if (p.cover_thumb) { %>
+                    <img src="<%= p.cover_thumb %>" alt="" loading="lazy">
+                  <% } else { %>
+                    <%- include('../partials/icon', { name: 'image', size: 24, color: '#3E7CB1', sw: 1.5 }) %>
+                  <% } %>
+                </div>
+              </td>
+              <td>
+                <div class="row-title"><%= p.title %></div>
+                <div class="row-sub"><%= p.category %> · <%= p.item_condition %></div>
+              </td>
+              <td><strong><%= money(p.price) %></strong></td>
+              <td>
+                <form class="status-form" action="/admin/productos/<%= p.id %>/estado" method="post">
+                  <label class="sr-only" for="status-<%= p.id %>">Disponibilidad de <%= p.title %></label>
+                  <select id="status-<%= p.id %>" name="status" data-autosubmit>
+                    <% Object.entries(cfg.STATUSES).forEach(function (entry) { %>
+                      <option value="<%= entry[0] %>" <%= p.status === entry[0] ? 'selected' : '' %>><%= entry[1] %></option>
+                    <% }) %>
+                  </select>
+                  <noscript><button class="btn btn-outline btn-sm" type="submit">Guardar</button></noscript>
+                </form>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <a class="btn btn-outline btn-sm" href="/producto/<%= p.id %>" target="_blank" rel="noopener">Ver</a>
+                  <a class="btn btn-outline btn-sm" href="/admin/productos/<%= p.id %>/editar">Editar</a>
+                  <form class="inline-form" action="/admin/productos/<%= p.id %>/eliminar" method="post" data-confirm="¿Eliminar «<%= p.title %>»? Esta acción no se puede deshacer.">
+                    <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <p><%= q ? 'No hay productos que coincidan con tu búsqueda.' : 'Todavía no tienes productos. Publica el primero.' %></p>
+      <a class="btn btn-primary" href="/admin/productos/nuevo">Nuevo producto</a>
+    </div>
+  <% } %>
+</main>
+</body>
+</html>

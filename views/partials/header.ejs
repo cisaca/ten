@@ -1,0 +1,19 @@
+<% if (settings.top_banner) { %>
+<div class="topbar"><%= settings.top_banner %></div>
+<% } %>
+<header class="site-header">
+  <div class="container header-row">
+    <a class="logo" href="/">
+      <span class="logo-mark"><%- include('icon', { name: 'bolt', size: 20, color: '#E6F1F5', sw: 2 }) %></span>
+      <span class="logo-text"><%= settings.store_name %></span>
+    </a>
+    <form class="search" action="/" method="get" role="search">
+      <input type="search" name="q" value="<%= locals.q || '' %>" maxlength="80" aria-label="Buscar productos" placeholder="Buscar celulares, audífonos, consolas…">
+      <button class="btn btn-primary" type="submit">Buscar</button>
+    </form>
+    <a class="btn btn-wa" href="<%= waLink() %>" target="_blank" rel="noopener">
+      <%- include('icon', { name: 'chat', size: 18, color: '#FFFFFF', sw: 2 }) %>
+      Escríbeme por WhatsApp
+    </a>
+  </div>
+</header>

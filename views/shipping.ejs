@@ -1,0 +1,18 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<nav class="container breadcrumb" aria-label="Ruta de navegación">
+  <a href="/">Inicio</a>
+  <span aria-hidden="true">›</span>
+  <span>Envíos, pagos y devoluciones</span>
+</nav>
+
+<section class="container section section-last">
+  <div class="panel panel-wide">
+    <h1 class="page-title">Envíos, pagos y devoluciones</h1>
+    <p class="prose"><%= settings.shipping_policy %></p>
+    <a class="btn btn-wa" href="<%= waLink() %>" target="_blank" rel="noopener">Tengo una duda: escríbeme</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

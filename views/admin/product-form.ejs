@@ -1,0 +1,128 @@
+<%- include('../partials/head', { noindex: true }) %>
+<%- include('../partials/admin-header') %>
+
+<main class="container admin-main">
+  <%- include('../partials/flash') %>
+
+  <div class="admin-title-row">
+    <h1><%= product ? 'Editar producto' : 'Nuevo producto' %></h1>
+    <a class="btn btn-outline" href="/admin">Volver a la lista</a>
+  </div>
+
+  <% if (errors.length) { %>
+    <div class="alert alert-error" role="alert">
+      <ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul>
+    </div>
+  <% } %>
+
+  <form class="form-card" action="<%= product ? '/admin/productos/' + product.id : '/admin/productos' %>" method="post">
+    <div class="field">
+      <label for="title">Nombre del producto</label>
+      <input id="title" type="text" name="title" maxlength="120" required value="<%= values.title || '' %>" placeholder="Ej: Smartphone 128 GB">
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="category">Categoría</label>
+        <select id="category" name="category" required>
+          <option value="">Elige una…</option>
+          <% cfg.CATEGORIES.forEach(function (c) { %>
+            <option value="<%= c %>" <%= values.category === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="item_condition">Estado</label>
+        <select id="item_condition" name="item_condition" required>
+          <option value="">Elige uno…</option>
+          <% cfg.CONDITIONS.forEach(function (c) { %>
+            <option value="<%= c %>" <%= values.item_condition === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="price">Precio</label>
+        <input id="price" type="text" inputmode="numeric" name="price" required value="<%= values.price === undefined ? '' : values.price %>" placeholder="Solo números, ej: 189990">
+      </div>
+      <div class="field">
+        <label for="status">Disponibilidad</label>
+        <select id="status" name="status">
+          <% Object.entries(cfg.STATUSES).forEach(function (entry) { %>
+            <option value="<%= entry[0] %>" <%= (values.status || 'disponible') === entry[0] ? 'selected' : '' %>><%= entry[1] %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="note">Frase corta (se ve en la tarjeta)</label>
+      <input id="note" type="text" name="note" maxlength="120" value="<%= values.note || '' %>" placeholder="Ej: Con caja y cargador original">
+    </div>
+
+    <div class="field">
+      <label for="includes">Qué incluye</label>
+      <input id="includes" type="text" name="includes" maxlength="200" value="<%= values.includes || '' %>" placeholder="Ej: Caja, cargador y cable">
+    </div>
+
+    <div class="field">
+      <label for="description">Descripción</label>
+      <textarea id="description" name="description" maxlength="3000" rows="5"><%= values.description || '' %></textarea>
+    </div>
+
+    <div class="field">
+      <label for="flaws">Detalles a considerar</label>
+      <textarea id="flaws" name="flaws" maxlength="500" rows="3"><%= values.flaws || '' %></textarea>
+      <span class="help">Rayones, desgaste o cualquier detalle. Ser honesto genera confianza.</span>
+    </div>
+
+    <div class="field" data-photo-uploader data-max="<%= cfg.MAX_IMAGES - (product ? product.images.length : 0) %>" data-full="<%= cfg.IMAGE_MAX_SIDE %>" data-thumb="<%= cfg.THUMB_MAX_SIDE %>">
+      <label for="fotos">Fotos <%= product ? '(agregar más)' : '' %></label>
+      <input id="fotos" type="file" accept="image/jpeg,image/png,image/webp" multiple data-photo-input>
+      <span class="help">JPG, PNG o WebP, hasta <%= cfg.MAX_IMAGES %> fotos por producto. Se reducen y se les borra la ubicación antes de subirlas. La primera es la foto principal.</span>
+      <noscript><span class="help">Para subir fotos necesitas activar JavaScript en tu navegador.</span></noscript>
+      <p class="help" data-photo-status role="status" aria-live="polite"></p>
+      <div class="photo-grid" data-photo-list>
+        <% pending.forEach(function (ph) { %>
+          <div class="photo-item" data-pending>
+            <div class="photo-frame"><img src="<%= ph.thumb_url || ph.url %>" alt="Foto nueva"><span class="badge">Nueva</span></div>
+            <input type="hidden" name="foto" value="<%= ph.url %>|<%= ph.thumb_url || '' %>">
+            <div class="photo-actions"><button class="btn btn-danger btn-sm" type="button" data-remove-pending>Quitar</button></div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit"><%= product ? 'Guardar cambios' : 'Publicar producto' %></button>
+      <a class="btn btn-outline" href="/admin">Cancelar</a>
+    </div>
+  </form>
+
+  <% if (product && product.images.length) { %>
+    <section class="form-card" aria-label="Fotos actuales">
+      <h2 class="panel-title">Fotos actuales</h2>
+      <div class="photo-grid">
+        <% product.images.forEach(function (img, i) { %>
+          <div class="photo-item">
+            <div class="photo-frame">
+              <img src="<%= img.thumb_url || img.url %>" alt="Foto <%= i + 1 %> de <%= product.title %>" loading="lazy">
+              <% if (i === 0) { %><span class="badge">Principal</span><% } %>
+            </div>
+            <div class="photo-actions">
+              <% if (i !== 0) { %>
+                <form action="/admin/productos/<%= product.id %>/fotos/<%= img.id %>/portada" method="post">
+                  <button class="btn btn-outline btn-sm btn-block" type="submit">Hacer principal</button>
+                </form>
+              <% } %>
+              <form action="/admin/productos/<%= product.id %>/fotos/<%= img.id %>/eliminar" method="post" data-confirm="¿Eliminar esta foto?">
+                <button class="btn btn-danger btn-sm btn-block" type="submit">Eliminar</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+</main>
+</body>
+</html>

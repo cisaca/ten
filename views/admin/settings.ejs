@@ -1,0 +1,67 @@
+<%- include('../partials/head', { noindex: true }) %>
+<%- include('../partials/admin-header') %>
+
+<main class="container admin-main">
+  <%- include('../partials/flash') %>
+
+  <div class="admin-title-row">
+    <h1>Ajustes de la tienda</h1>
+  </div>
+
+  <% if (errors.length) { %>
+    <div class="alert alert-error" role="alert">
+      <ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul>
+    </div>
+  <% } %>
+
+  <form class="form-card" action="/admin/ajustes" method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label for="store_name">Nombre de la tienda</label>
+        <input id="store_name" type="text" name="store_name" maxlength="60" required value="<%= values.store_name %>">
+      </div>
+      <div class="field">
+        <label for="seller_name">Tu nombre</label>
+        <input id="seller_name" type="text" name="seller_name" maxlength="80" value="<%= values.seller_name %>" placeholder="Aparece en «Quién vende»">
+      </div>
+      <div class="field">
+        <label for="whatsapp">Número de WhatsApp</label>
+        <input id="whatsapp" type="text" inputmode="tel" name="whatsapp" maxlength="25" value="<%= values.whatsapp %>" placeholder="Con código de país, ej: 56912345678">
+        <span class="help">Solo números, con código de país y sin el signo +.</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="top_banner">Franja superior</label>
+      <input id="top_banner" type="text" name="top_banner" maxlength="160" value="<%= values.top_banner %>">
+      <span class="help">Déjala vacía si no quieres mostrarla.</span>
+    </div>
+
+    <div class="field">
+      <label for="hero_title">Título de portada</label>
+      <input id="hero_title" type="text" name="hero_title" maxlength="100" value="<%= values.hero_title %>">
+    </div>
+
+    <div class="field">
+      <label for="hero_text">Texto de portada</label>
+      <textarea id="hero_text" name="hero_text" maxlength="300" rows="3"><%= values.hero_text %></textarea>
+    </div>
+
+    <div class="field">
+      <label for="about_text">Sobre ti («Quién vende»)</label>
+      <textarea id="about_text" name="about_text" maxlength="1200" rows="4"><%= values.about_text %></textarea>
+    </div>
+
+    <div class="field">
+      <label for="shipping_policy">Envíos, pagos y devoluciones</label>
+      <textarea id="shipping_policy" name="shipping_policy" maxlength="4000" rows="8"><%= values.shipping_policy %></textarea>
+      <span class="help">Se muestra en la página «Envíos y devoluciones». Reemplaza los textos entre [corchetes].</span>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Guardar ajustes</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>

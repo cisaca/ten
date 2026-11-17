@@ -1,0 +1,16 @@
+<a class="card<%= p.status === 'vendido' ? ' card-sold' : '' %>" href="/producto/<%= p.id %>">
+  <div class="card-img">
+    <% if (p.cover_thumb) { %>
+      <img src="<%= p.cover_thumb %>" alt="<%= p.title %>" loading="lazy">
+    <% } else { %>
+      <%- include('icon', { name: 'image', size: 48, color: '#3E7CB1', sw: 1.5 }) %>
+    <% } %>
+    <span class="badge"><%= p.item_condition %></span>
+  </div>
+  <div class="card-body">
+    <span class="card-title"><%= p.title %></span>
+    <% if (p.note) { %><span class="card-note"><%= p.note %></span><% } %>
+    <span class="card-price"><%= money(p.price) %></span>
+    <div><%- include('status-chip', { status: p.status }) %></div>
+  </div>
+</a>

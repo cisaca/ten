@@ -1,0 +1,10 @@
+<header class="admin-bar">
+  <div class="container">
+    <strong>Panel · <%= settings.store_name %></strong>
+    <a href="/admin" class="<%= currentPath === '/admin' || currentPath === '/admin/' ? 'current' : '' %>">Productos</a>
+    <a href="/admin/productos/nuevo" class="<%= currentPath === '/admin/productos/nuevo' ? 'current' : '' %>">Nuevo producto</a>
+    <a href="/admin/ajustes" class="<%= currentPath === '/admin/ajustes' ? 'current' : '' %>">Ajustes</a>
+    <a href="/" target="_blank" rel="noopener">Ver tienda</a>
+    <form class="inline-form" action="/admin/logout" method="post"><button type="submit">Salir</button></form>
+  </div>
+</header>

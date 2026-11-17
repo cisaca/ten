@@ -1,0 +1,8 @@
+<%
+const chipMap = {
+  disponible: ['chip-ok', 'Disponible'],
+  reservado: ['chip-warn', 'Reservado'],
+  vendido: ['chip-off', 'Vendido']
+};
+const chip = chipMap[status] || chipMap.disponible;
+%><span class="chip <%= chip[0] %>"><%= chip[1] %></span>

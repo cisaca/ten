@@ -1,0 +1,112 @@
+<%- include('partials/head', { description: settings.hero_text }) %>
+<%- include('partials/header') %>
+
+<nav class="container pills" aria-label="Categorías">
+  <a class="pill<%= !category ? ' active' : '' %>" href="<%= filterUrl({ categoria: '' }) %>">Todo</a>
+  <% cfg.CATEGORIES.forEach(function (c) { %>
+    <a class="pill<%= category === c ? ' active' : '' %>" href="<%= filterUrl({ categoria: c }) %>"><%= c %></a>
+  <% }) %>
+</nav>
+
+<section class="container hero">
+  <h1><%= settings.hero_title %></h1>
+  <p><%= settings.hero_text %></p>
+</section>
+
+<section class="container trust" aria-label="Por qué comprar aquí">
+  <div class="trust-item">
+    <%- include('partials/icon', { name: 'camera', size: 28, color: '#2F6798' }) %>
+    <div><strong>Fotos reales</strong><span>Lo que ves es lo que recibes.</span></div>
+  </div>
+  <div class="trust-item">
+    <%- include('partials/icon', { name: 'check', size: 28, color: '#2F6798' }) %>
+    <div><strong>Estado detallado</strong><span>Te cuento todo, también lo malo.</span></div>
+  </div>
+  <div class="trust-item">
+    <%- include('partials/icon', { name: 'chat', size: 28, color: '#2F6798' }) %>
+    <div><strong>Trato directo</strong><span>Hablas conmigo, sin intermediarios.</span></div>
+  </div>
+  <div class="trust-item">
+    <%- include('partials/icon', { name: 'truck', size: 28, color: '#2F6798' }) %>
+    <div><strong>Envío o retiro</strong><span>Lo coordinamos como te acomode.</span></div>
+  </div>
+</section>
+
+<section class="container section" id="productos">
+  <div class="section-head">
+    <div>
+      <h2><%= hasFilters ? 'Resultados' : 'Productos' %></h2>
+      <span class="muted"><%= products.length %> <%= products.length === 1 ? 'producto' : 'productos' %></span>
+    </div>
+    <div class="filters">
+      <a class="pill pill-sm<%= !condition ? ' active-blue' : '' %>" href="<%= filterUrl({ estado: '' }) %>">Todos</a>
+      <% cfg.CONDITIONS.forEach(function (c) { %>
+        <a class="pill pill-sm<%= condition === c ? ' active-blue' : '' %>" href="<%= filterUrl({ estado: c }) %>"><%= c %></a>
+      <% }) %>
+      <form action="/" method="get" class="sort-form">
+        <% if (q) { %><input type="hidden" name="q" value="<%= q %>"><% } %>
+        <% if (category) { %><input type="hidden" name="categoria" value="<%= category %>"><% } %>
+        <% if (condition) { %><input type="hidden" name="estado" value="<%= condition %>"><% } %>
+        <label class="sr-only" for="orden">Ordenar productos</label>
+        <select id="orden" name="orden" data-autosubmit>
+          <option value="" <%= sort === 'recientes' ? 'selected' : '' %>>Más recientes</option>
+          <option value="menor" <%= sort === 'menor' ? 'selected' : '' %>>Menor precio</option>
+          <option value="mayor" <%= sort === 'mayor' ? 'selected' : '' %>>Mayor precio</option>
+        </select>
+        <noscript><button class="btn btn-outline btn-sm" type="submit">Ordenar</button></noscript>
+      </form>
+    </div>
+  </div>
+
+  <% if (products.length) { %>
+    <div class="grid-products">
+      <% products.forEach(function (p) { %>
+        <%- include('partials/card', { p: p }) %>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <% if (hasFilters) { %>
+        <p>No encontramos productos con esos filtros.</p>
+        <a class="btn btn-outline" href="/#productos">Ver todos los productos</a>
+      <% } else { %>
+        <p>Pronto subiré productos nuevos. Escríbeme si buscas algo en particular.</p>
+        <a class="btn btn-wa" href="<%= waLink() %>" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
+      <% } %>
+    </div>
+  <% } %>
+</section>
+
+<section class="container section" id="como-comprar">
+  <h2>Cómo comprar</h2>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">1</span>
+      <strong>Elige tu producto</strong>
+      <span>Revisa las fotos, el estado y el precio en la ficha.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <strong>Escríbeme por WhatsApp</strong>
+      <span>Un clic y se abre el chat con el producto ya indicado.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <strong>Coordinamos pago y entrega</strong>
+      <span>Acordamos la forma de pago y si es envío o retiro.</span>
+    </div>
+  </div>
+</section>
+
+<section class="container section section-last">
+  <div class="about">
+    <div class="avatar"><%- include('partials/icon', { name: 'user', size: 44, color: '#3E7CB1', sw: 1.5 }) %></div>
+    <div class="about-text">
+      <h2>Quién vende</h2>
+      <p><%= settings.seller_name ? 'Hola, soy ' + settings.seller_name + '. ' : '' %><%= settings.about_text %></p>
+    </div>
+    <a class="btn btn-wa" href="<%= waLink() %>" target="_blank" rel="noopener">Hablemos por WhatsApp</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
