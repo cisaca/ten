@@ -5,22 +5,32 @@ const cfg = require('./config');
 // ---------- Conexión ----------
 // En Vercel: Turso (SQLite en la nube) por HTTPS. En tu computador: un archivo local.
 
-let client;
-if (cfg.DATABASE_URL) {
-  const { createClient } = require('@libsql/client/web');
-  client = createClient({
-    url: cfg.DATABASE_URL.replace(/^libsql:/, 'https:'),
-    authToken: cfg.DATABASE_TOKEN || undefined
-  });
-} else {
-  if (cfg.ON_VERCEL) {
-    // Sin base de datos configurada, en Vercel todo se perdería: mejor fallar con un aviso claro.
-    throw new Error('Falta la base de datos: instala Turso desde el Marketplace de Vercel (TURSO_DATABASE_URL).');
+// El cliente se crea la primera vez que se usa (no al cargar el módulo): si falta la
+// base de datos en Vercel, un error al importar tumbaría toda la función sin dejar un log claro.
+let _client = null;
+function getClient() {
+  if (_client) return _client;
+  if (cfg.DATABASE_URL) {
+    const { createClient } = require('@libsql/client/web');
+    _client = createClient({
+      url: cfg.DATABASE_URL.replace(/^libsql:/, 'https:'),
+      authToken: cfg.DATABASE_TOKEN || undefined
+    });
+  } else {
+    if (cfg.ON_VERCEL) {
+      // Sin base de datos configurada, en Vercel todo se perdería: mejor fallar con un aviso claro.
+      throw new Error('Falta la base de datos: instala Turso desde el Marketplace de Vercel (TURSO_DATABASE_URL).');
+    }
+    fs.mkdirSync(cfg.DATA_DIR, { recursive: true });
+    const { createClient } = require('@libsql/client');
+    _client = createClient({ url: 'file:' + path.join(cfg.DATA_DIR, 'tienda.db') });
   }
-  fs.mkdirSync(cfg.DATA_DIR, { recursive: true });
-  const { createClient } = require('@libsql/client');
-  client = createClient({ url: 'file:' + path.join(cfg.DATA_DIR, 'tienda.db') });
+  return _client;
 }
+const client = {
+  execute: (...a) => getClient().execute(...a),
+  batch: (...a) => getClient().batch(...a)
+};
 
 const toObjects = (rs) => rs.rows.map((row) => Object.fromEntries(rs.columns.map((c) => [c, row[c]])));
 

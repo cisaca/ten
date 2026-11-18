@@ -19,6 +19,10 @@ if (!auth.hasSecret) {
   problems.push('Falta definir SESSION_SECRET (una clave larga y aleatoria, mínimo 16 caracteres).');
 }
 
+if (cfg.ON_VERCEL && !cfg.DATABASE_URL) {
+  problems.push('Falta la base de datos: instala Turso desde el Marketplace de Vercel (TURSO_DATABASE_URL y TURSO_AUTH_TOKEN).');
+}
+
 const app = express();
 
 app.disable('x-powered-by');
